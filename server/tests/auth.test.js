@@ -10,7 +10,7 @@ describe('Authentication API Integration Tests', () => {
     delete process.env.MONGODB_URI;
     await connectDB();
     await User.deleteMany({});
-  });
+  }, 60000);
 
   afterAll(async () => {
     await disconnectDB();

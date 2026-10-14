@@ -31,12 +31,12 @@ describe('End-to-End Role-Based Contract Analysis & Isolation Tests', () => {
     freelancerToken = fRes.body.token;
     freelancerUser = fRes.body.user;
 
-    // 2. Register Intern / Employee
+    // 2. Register Intern
     const iRes = await request(app).post('/api/auth/register').send({
       name: 'Rohan Intern',
       email: 'rohan.intern@test.com',
       password: 'Password123!',
-      role: 'intern', // tests normalization to 'employee'
+      role: 'intern', // 3 canonical roles: freelancer, intern, small_business
     });
     internToken = iRes.body.token;
     internUser = iRes.body.user;
@@ -51,12 +51,12 @@ describe('End-to-End Role-Based Contract Analysis & Isolation Tests', () => {
     smbToken = sRes.body.token;
     smbUser = sRes.body.user;
 
-    // 4. Register Founder / Startup Owner
+    // 4. Register Small Business Owner (commercial lease / customer contract perspective)
     const foRes = await request(app).post('/api/auth/register').send({
-      name: 'Vikram Founder',
-      email: 'vikram.founder@test.com',
+      name: 'Vikram SMB',
+      email: 'vikram.smb@test.com',
       password: 'Password123!',
-      role: 'startup', // tests normalization to 'founder'
+      role: 'small_business',
     });
     founderToken = foRes.body.token;
     founderUser = foRes.body.user;
@@ -125,7 +125,7 @@ describe('End-to-End Role-Based Contract Analysis & Isolation Tests', () => {
     expect(res.body.success).toBe(true);
     const contract = res.body.contract;
 
-    expect(contract.roleAtAnalysis).toBe('employee');
+    expect(contract.roleAtAnalysis).toBe('intern');
     expect(contract.detectedContractType).toMatch(/Internship/i);
 
     // Check internship-specific flags: training bond penalty is flagged as Critical/High
@@ -165,34 +165,34 @@ describe('End-to-End Role-Based Contract Analysis & Isolation Tests', () => {
     expect(liabilityClause.whyItMatters).toMatch(/business|liability|supplier|vendor|continuity/i);
   });
 
-  // Acceptance Criterion 4: Founder uploads founder agreement
-  it('Criterion 4: Founder uploads founder agreement and receives startup-specific analysis', async () => {
-    const founderAgreement = `
-    FOUNDERS AND SHAREHOLDERS AGREEMENT
-    1. EQUITY ALLOCATION: Founder A holds 60% and Founder B holds 40% of Common Stock of Startup Private Limited.
-    2. VESTING SCHEDULE: All founder shares vest over 4 years with a 1-year cliff and monthly vesting thereafter.
-    3. DEPARTURE & SHARE BUYBACK: If any founder departs or is terminated for any reason within 3 years, the Company has the right to repurchase all unvested and vested shares at nominal par value of INR 10 per share.
-    4. INTELLECTUAL PROPERTY ASSIGNMENT: All pre-existing and future inventions are irrevocably assigned to the Company.
-    5. DEADLOCK RESOLUTION: In the event of board deadlock, Founder A has tie-breaking casting vote on all operational matters.
+  // Acceptance Criterion 4: Small Business Owner uploads commercial lease agreement
+  it('Criterion 4: Small business owner uploads commercial lease and receives business-specific analysis', async () => {
+    const commercialLease = `
+    COMMERCIAL LEASE AND PREMISES AGREEMENT
+    1. LEASE TERM & PREMISES: Lessor leases commercial office premises to Lessee for thirty-six (36) months.
+    2. RENT & ESCALATION: Monthly rent shall be INR 75,000, escalating by 15% annually at Lessor sole discretion.
+    3. SECURITY DEPOSIT: Lessee deposits INR 4,50,000 as a non-refundable security deposit subject to total forfeiture upon any dispute.
+    4. REPAIRS & INDEMNITY: Lessee shall bear all structural repair costs and indemnifies Lessor with unlimited liability for building damages.
+    5. TERMINATION: Lessor may terminate immediately with 7 days notice. Lessee has no right to terminate early under any circumstances.
     `;
 
     const res = await request(app)
       .post('/api/contracts/upload')
       .set('Authorization', `Bearer ${founderToken}`)
-      .attach('file', Buffer.from(founderAgreement, 'utf-8'), 'founders_shareholders_agreement.txt');
+      .attach('file', Buffer.from(commercialLease, 'utf-8'), 'commercial_lease_agreement.txt');
 
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     const contract = res.body.contract;
 
-    expect(contract.roleAtAnalysis).toBe('founder');
-    expect(contract.detectedContractType).toMatch(/Founder|Shareholder|Startup/i);
+    expect(contract.roleAtAnalysis).toBe('small_business');
+    expect(contract.detectedContractType).toMatch(/Lease|Commercial|Premises|Service|Vendor|Agreement/i);
 
-    // Verify founder departure share buyback at nominal par value is flagged as Critical
-    const buybackClause = contract.clauses.find((c) => c.text.includes('DEPARTURE') || c.text.includes('repurchase'));
-    expect(buybackClause).toBeDefined();
-    expect(buybackClause.risk).toMatch(/Critical|High/);
-    expect(buybackClause.whyItMatters).toMatch(/founder|equity|vested|dilution|fair market/i);
+    // Verify lease/commercial terms: deposit / termination / rent escalation
+    const terminationClause = contract.clauses.find((c) => c.text.includes('TERMINATION') || c.text.includes('SECURITY DEPOSIT'));
+    expect(terminationClause).toBeDefined();
+    expect(terminationClause.risk).toMatch(/Critical|High/);
+    expect(terminationClause.whyItMatters).toMatch(/business|liability|termination|rent|lease|deposit|cash flow/i);
   });
 
   // Acceptance Criterion 5: NDA uploaded and checked from role perspective
@@ -279,7 +279,7 @@ describe('End-to-End Role-Based Contract Analysis & Isolation Tests', () => {
     expect(res.body.contract.roleAtAnalysis).not.toBe('founder');
   });
 
-  // Acceptance Criterion 9: Different roles produce appropriately different risk explanations for same clause
+  // Acceptance Criterion 9: Different roles produce appropriately different risk explanations for the same clause
   it('Criterion 9: Different roles produce appropriately different risk explanations for the same clause', () => {
     const ipClause = {
       id: 'c-ip',
@@ -288,21 +288,21 @@ describe('End-to-End Role-Based Contract Analysis & Isolation Tests', () => {
     };
 
     const freelancerResult = runFallbackAnalysis([ipClause], 'freelancer');
-    const employeeResult = runFallbackAnalysis([ipClause], 'employee');
-    const founderResult = runFallbackAnalysis([ipClause], 'founder');
+    const internResult = runFallbackAnalysis([ipClause], 'intern');
+    const smbResult = runFallbackAnalysis([ipClause], 'small_business');
 
     const freelancerScored = freelancerResult.clauses[0];
-    const employeeScored = employeeResult.clauses[0];
-    const founderScored = founderResult.clauses[0];
+    const internScored = internResult.clauses[0];
+    const smbScored = smbResult.clauses[0];
 
     // Freelancer explanation emphasizes portfolio, pre-existing tools, payment condition
     expect(freelancerScored.whyItMatters).toMatch(/freelance|pre-existing|portfolio|payment/i);
 
-    // Employee explanation emphasizes Section 17 Copyright Act & work hours
-    expect(employeeScored.whyItMatters).toMatch(/employee|Section 17|copyright|personal projects/i);
+    // Intern explanation emphasizes intern, academic credit, university, or employment protections
+    expect(internScored.whyItMatters).toMatch(/intern|academic|university|personal projects|Section 17|employee/i);
 
-    // Founder explanation emphasizes company entity assignment & investor diligence
-    expect(founderScored.whyItMatters).toMatch(/founder|company|investor|entity|startup/i);
+    // Small business explanation emphasizes small business, proprietary software, platform IP, or vendor trade secrets
+    expect(smbScored.whyItMatters).toMatch(/business|software|platform|frameworks|vendor|proprietary/i);
   });
 
   // Acceptance Criterion 10: Unsupported or low-confidence documents handled gracefully

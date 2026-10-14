@@ -48,9 +48,10 @@ export const ClauseCard = ({ clause, index, isExpandedDefault = false, userRole 
 
   const roleLabels = {
     freelancer: 'Freelancer',
-    employee: 'Employee / Intern',
+    intern: 'Intern',
+    employee: 'Intern',
     small_business: 'Small Business Owner',
-    founder: 'Founder / Startup Owner',
+    founder: 'Small Business Owner',
   };
 
   const readableRole = roleLabels[userRole] || userRole || 'your role';

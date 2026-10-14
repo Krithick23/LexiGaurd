@@ -189,7 +189,7 @@ const contractSchema = new mongoose.Schema(
     },
     roleAtAnalysis: {
       type: String,
-      enum: ['freelancer', 'employee', 'small_business', 'founder'],
+      enum: ['freelancer', 'intern', 'small_business', 'employee', 'founder'],
       default: 'freelancer',
     },
     modelUsed: {

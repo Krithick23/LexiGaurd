@@ -18,7 +18,7 @@ export const Footer = () => {
               </span>
             </div>
             <p className="text-slate-400 max-w-sm leading-relaxed">
-              Understand your contract before you sign. AI-powered contract risk review and negotiation suggestions designed specifically for Indian freelancers, employees, and founders.
+              Understand your contract before you sign. AI-powered contract risk review and negotiation suggestions designed specifically for Indian freelancers, interns, and small business owners.
             </p>
             <p className="text-[11px] text-slate-500">
               Compliant with Section 27 Indian Contract Act benchmarks & Indian Copyright Act standards.

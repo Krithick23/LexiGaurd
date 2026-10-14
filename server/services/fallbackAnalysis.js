@@ -132,8 +132,8 @@ export const classifyContractDeterministically = (rawText, userRole = 'freelance
   let classificationDetails = `Detected as a ${documentType} analyzed from the perspective of an authenticated ${userRole}.`;
   if (userRole === 'freelancer' && (isEmployment || isInternship)) {
     classificationDetails = `Notice: You are registered as a Freelancer, but this document appears to be an ${documentType}. It contains employment commitments rather than independent project terms.`;
-  } else if (userRole === 'employee' && isFreelance) {
-    classificationDetails = `Notice: You are registered as an Employee/Intern, but this document is an Independent Contractor Agreement without employee labor protections.`;
+  } else if ((userRole === 'intern' || userRole === 'employee') && isFreelance) {
+    classificationDetails = `Notice: You are registered as an Intern, but this document is an Independent Contractor Agreement without intern or educational safeguards.`;
   }
 
   return {
@@ -165,8 +165,8 @@ const ROLE_AWARE_RULES = [
       const isPostTermination = /(?:after|following|upon)\s+(?:termination|expiry)/i.test(text) ||
         /(?:12|24|36)\s+months/i.test(text);
 
-      if (role === 'employee') {
-        const isIntern = docType.includes('Intern');
+      if (role === 'employee' || role === 'intern') {
+        const isIntern = docType.includes('Intern') || role === 'intern';
         if (isIntern) {
           return {
             title: 'Intern Post-Exit Non-Compete Trap',
@@ -314,8 +314,8 @@ const ROLE_AWARE_RULES = [
       const isDelayed = /60\s+days|90\s+days|120\s+days/i.test(text);
       const isArbitrary = /withhold|forfeit|sole\s+discretion|subjective/i.test(text);
 
-      if (role === 'employee') {
-        const isIntern = docType.includes('Intern');
+      if (role === 'employee' || role === 'intern') {
+        const isIntern = docType.includes('Intern') || role === 'intern';
         if (isIntern && (/unpaid/i.test(text) || /no\s+stipend/i.test(text))) {
           return {
             title: 'Unpaid Internship / Zero Compensation',
@@ -494,8 +494,8 @@ const ROLE_AWARE_RULES = [
       const beforePayment = /prior\s+to\s+payment|immediately\s+upon\s+creation|irrespective\s+of.*payment/i.test(text);
       const moralRightsWaiver = /moral\s+rights|waives?\s+all\s+attribution/i.test(text);
 
-      if (role === 'employee') {
-        const isIntern = docType.includes('Intern');
+      if (role === 'employee' || role === 'intern') {
+        const isIntern = docType.includes('Intern') || role === 'intern';
         const capturesOffHours = /whether\s+or\s+not\s+during\s+work\s+hours|personal\s+equipment|any\s+invention/i.test(text);
 
         if (capturesOffHours) {
@@ -711,8 +711,8 @@ const ROLE_AWARE_RULES = [
       const isAsymmetric = /company\s+may\s+terminate.*immediately.*(?:contractor|employee)\s+may\s+terminate.*(?:60|90)\s+days/is.test(text);
       const is90DayNotice = /90\s+days?\s+notice|3\s+months?\s+notice/i.test(text);
 
-      if (role === 'employee') {
-        const isIntern = docType.includes('Intern');
+      if (role === 'employee' || role === 'intern') {
+        const isIntern = docType.includes('Intern') || role === 'intern';
 
         if (isBond) {
           return {

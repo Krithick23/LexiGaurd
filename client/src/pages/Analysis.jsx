@@ -113,9 +113,10 @@ export const Analysis = () => {
 
   const roleDisplayNames = {
     freelancer: 'Freelancer',
-    employee: 'Intern / Employee',
+    intern: 'Intern',
+    employee: 'Intern',
     small_business: 'Small Business Owner',
-    founder: 'Founder / Startup Owner',
+    founder: 'Small Business Owner',
   };
 
   const readableRole =

@@ -2,30 +2,28 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcryptjs';
 
 /**
- * Normalizes user role string to one of the 4 canonical roles:
- * - 'freelancer' (Freelancer / Independent Contractor)
- * - 'employee' (Intern / Full-Time Employee)
- * - 'small_business' (Small Business Owner / Vendor / SMB)
- * - 'founder' (Startup Founder / Co-Founder / Equity Holder)
+ * Normalizes user role string to one of the 3 canonical roles:
+ * - 'freelancer' (Freelancers / Independent Contractors)
+ * - 'intern' (Interns / Students / Trainees)
+ * - 'small_business' (Small Business Owners / Vendors / SMBs)
  */
 export const normalizeRole = (role) => {
   if (!role || typeof role !== 'string') return 'freelancer';
   const r = role.toLowerCase().trim();
-  if (r.includes('intern') || r.includes('employee') || r === 'intern_employee') {
-    return 'employee';
+  if (r.includes('intern') || r.includes('employee') || r === 'intern_employee' || r === 'student') {
+    return 'intern';
   }
   if (
     r.includes('business') ||
     r.includes('vendor') ||
     r.includes('smb') ||
     r.includes('supplier') ||
+    r.includes('founder') ||
+    r.includes('startup') ||
     r === 'small_business' ||
     r === 'agency'
   ) {
     return 'small_business';
-  }
-  if (r.includes('founder') || r.includes('startup') || r === 'startup_founder') {
-    return 'founder';
   }
   if (r.includes('free') || r.includes('contractor') || r.includes('consultant')) {
     return 'freelancer';
@@ -61,7 +59,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: {
-        values: ['freelancer', 'employee', 'small_business', 'founder'],
+        values: ['freelancer', 'intern', 'small_business', 'employee', 'founder'],
         message: '{VALUE} is not a supported role',
       },
       default: 'freelancer',

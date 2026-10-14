@@ -18,10 +18,17 @@ import FileUploader from '../components/FileUploader.jsx';
 import LegalDisclaimer from '../components/LegalDisclaimer.jsx';
 
 const ROLE_DISPLAY_NAMES = {
-  freelancer: 'Freelancer / Contractor',
-  employee: 'Intern / Employee',
+  freelancer: 'Freelancer',
+  intern: 'Intern',
+  employee: 'Intern',
   small_business: 'Small Business Owner',
-  founder: 'Founder / Startup Owner',
+};
+
+const ROLE_TARGET_DOCS = {
+  freelancer: 'Freelance service agreements, client contracts, SOWs, and consulting agreements',
+  intern: 'Internship offer letters, internship agreements, stipend letters, and training bonds',
+  employee: 'Internship offer letters, internship agreements, stipend letters, and training bonds',
+  small_business: 'Vendor & supplier agreements, customer service contracts, commercial leases, and SaaS SLAs',
 };
 
 export const Upload = () => {
@@ -130,32 +137,38 @@ export const Upload = () => {
         </div>
 
         {/* Automatic Registered Role Indicator (Informational Only - No Role Question / Dropdown) */}
-        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center shrink-0 shadow-subtle">
-              <ShieldCheck size={20} />
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center shrink-0 shadow-subtle">
+                <ShieldCheck size={20} />
+              </div>
+              <div>
+                <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                  Review Perspective
+                </div>
+                <div className="text-sm font-semibold text-slate-900">
+                  Analyzing as: <span className="text-brand-600 font-bold">{roleTitle}</span>
+                </div>
+              </div>
             </div>
-            <div>
-              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                Review Perspective
-              </div>
-              <div className="text-sm font-semibold text-slate-900">
-                Analyzing as:{' '}
-                <span className="text-brand-600 font-bold">{roleTitle}</span>
-              </div>
+
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <span>(from account)</span>
+              <span>•</span>
+              <Link
+                to="/settings"
+                className="text-brand-600 hover:text-brand-700 font-semibold hover:underline inline-flex items-center gap-0.5"
+              >
+                <span>Change role</span>
+                <ArrowRight size={12} />
+              </Link>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-slate-500">
-            <span>(from account)</span>
-            <span>•</span>
-            <Link
-              to="/settings"
-              className="text-brand-600 hover:text-brand-700 font-semibold hover:underline inline-flex items-center gap-0.5"
-            >
-              <span>Change role</span>
-              <ArrowRight size={12} />
-            </Link>
+          <div className="pt-2 border-t border-slate-200/70 text-xs text-slate-600 flex items-start gap-1.5">
+            <span className="font-bold text-slate-700 shrink-0">Particular Analyzing Documents:</span>
+            <span className="text-slate-600">{ROLE_TARGET_DOCS[userRole] || ROLE_TARGET_DOCS.freelancer}</span>
           </div>
         </div>
 

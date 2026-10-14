@@ -332,10 +332,10 @@ export const loadSampleContract = asyncHandler(async (req, res, next) => {
   let label = '';
   let sampleText = '';
 
-  if (role === 'employee') {
+  if (role === 'intern' || role === 'employee') {
     if (sampleType === 'negotiated' || sampleType === 'fair') {
-      displayName = 'Fair Internship & Employment Agreement (Demo).txt';
-      label = 'Fair Employment Demo';
+      displayName = 'Fair Internship Offer Agreement (Demo).txt';
+      label = 'Fair Internship Demo';
       sampleText = `INTERNSHIP AND APPOINTMENT AGREEMENT
 1. APPOINTMENT: Company appoints Candidate as Software Engineering Intern with structured learning goals.
 2. STIPEND: Company shall pay a fixed monthly stipend of INR 35,000 disbursed on the 1st of each calendar month.

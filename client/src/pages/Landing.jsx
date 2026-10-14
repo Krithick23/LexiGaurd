@@ -73,7 +73,7 @@ export const Landing = () => {
     {
       num: '03',
       title: 'Role-Tailored Risk Scoring',
-      desc: 'Our AI pipeline benchmarks terms for Indian freelancers, employees, or founders—flagging high, medium, and low risk clauses.',
+      desc: 'Our AI pipeline benchmarks terms for Indian freelancers, interns, and small business owners—flagging high, medium, and low risk clauses.',
       icon: Cpu,
     },
     {
@@ -91,7 +91,7 @@ export const Landing = () => {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-6">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-50 border border-brand-200 text-brand-700 text-xs font-semibold shadow-subtle">
             <Sparkles size={14} className="text-brand-600" />
-            <span>AI Contract Risk Analyzer for Indian Freelancers & Founders</span>
+            <span>AI Contract Risk Analyzer for Freelancers, Interns & Small Business Owners</span>
           </div>
 
           <h1 className="text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
@@ -287,7 +287,7 @@ export const Landing = () => {
             Ready to review your agreement?
           </h2>
           <p className="text-sm text-slate-600 max-w-md mx-auto">
-            Join Indian freelancers and founders reviewing their contracts before signing. Upload a file or try our interactive demo.
+            Join Indian freelancers, interns, and small business owners reviewing their contracts before signing. Upload a file or try our interactive demo.
           </p>
           <div className="pt-2">
             <Link
