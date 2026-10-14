@@ -1,0 +1,157 @@
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import {
+  buildSegmentPrompt,
+  buildRiskPrompt,
+  buildNegotiatePrompt,
+} from '../prompts/geminiPrompts.js';
+import {
+  extractAndParseJSON,
+  segmentedClausesSchema,
+  reconcileAndValidateRiskOutput,
+  negotiationSuggestionsSchema,
+} from '../utils/validateAIOutput.js';
+import { runFallbackAnalysis } from './fallbackAnalysis.js';
+import { segmentClausesDeterministically } from './segmentClauses.js';
+
+let genAI = null;
+
+function getGenAI() {
+  const apiKey = process.env.GEMINI_API_KEY ? process.env.GEMINI_API_KEY.trim() : null;
+  if (!apiKey) return null;
+  if (!genAI) {
+    try {
+      genAI = new GoogleGenerativeAI(apiKey);
+      console.log('[AI Service] Google Gemini API initialized successfully.');
+    } catch (initErr) {
+      console.warn(`[AI Service] Warning: Gemini API init error: ${initErr.message}`);
+    }
+  }
+  return genAI;
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Robust call wrapper with exponential backoff retry
+ */
+async function callGeminiWithRetry(prompt, modelName = process.env.GEMINI_MODEL || 'gemini-flash-lite-latest', maxRetries = 2) {
+  const ai = getGenAI();
+  if (!ai) {
+    throw new Error('Gemini API is not configured or disabled.');
+  }
+
+  const model = ai.getGenerativeModel({
+    model: modelName,
+    generationConfig: {
+      temperature: 0.2, // Low temperature for factual, analytical consistency
+      topP: 0.8,
+      responseMimeType: 'application/json',
+    },
+  });
+
+  let attempt = 0;
+  let delay = 1500;
+
+  while (attempt <= maxRetries) {
+    try {
+      const result = await Promise.race([
+        model.generateContent(prompt),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('AI generation timed out after 30 seconds')), 30000)
+        ),
+      ]);
+
+      const response = await result.response;
+      return response.text();
+    } catch (err) {
+      attempt++;
+      console.warn(`[Gemini API] Attempt ${attempt} failed: ${err.message}`);
+      if (attempt > maxRetries) {
+        throw err;
+      }
+      await sleep(delay);
+      delay *= 2;
+    }
+  }
+}
+
+/**
+ * Stage 1: Segment clauses using Gemini (with deterministic fallback)
+ */
+export async function segmentClausesWithGemini(rawContractText) {
+  // First, get deterministic baseline
+  const deterministicClauses = segmentClausesDeterministically(rawContractText);
+
+  if (!getGenAI() || deterministicClauses.length >= 3) {
+    // If deterministic parsing found solid section structure, use it for speed & accuracy
+    return deterministicClauses;
+  }
+
+  try {
+    const prompt = buildSegmentPrompt(rawContractText);
+    const rawOutput = await callGeminiWithRetry(prompt);
+    const parsed = extractAndParseJSON(rawOutput);
+    const validated = segmentedClausesSchema.parse(parsed);
+
+    return validated.clauses.map((c, index) => ({
+      id: c.id || `clause-${index + 1}`,
+      text: c.text,
+      originalOrder: index + 1,
+    }));
+  } catch (err) {
+    console.warn(`[AI Segmentation] Fallback to deterministic segmentation: ${err.message}`);
+    return deterministicClauses;
+  }
+}
+
+/**
+ * Stage 2: Risk Scoring with Gemini (with fallback)
+ */
+export async function scoreRiskWithGemini(clauses, role = 'freelancer') {
+  if (!getGenAI()) {
+    return runFallbackAnalysis(clauses, role);
+  }
+
+  try {
+    const prompt = buildRiskPrompt(clauses, role);
+    const rawOutput = await callGeminiWithRetry(prompt);
+    const parsed = extractAndParseJSON(rawOutput);
+    return reconcileAndValidateRiskOutput(parsed, clauses);
+  } catch (err) {
+    console.warn(`[AI Risk Scoring] Falling back to deterministic heuristics: ${err.message}`);
+    return runFallbackAnalysis(clauses, role);
+  }
+}
+
+/**
+ * Stage 3: Generate Negotiation Suggestions with Gemini (with fallback)
+ */
+export async function generateNegotiationSuggestionsWithGemini(riskyClauses, role = 'freelancer') {
+  if (!riskyClauses || riskyClauses.length === 0) {
+    return [];
+  }
+
+  if (!getGenAI()) {
+    // Return existing suggestions from fallback analysis
+    return riskyClauses.map((c) => ({
+      clauseId: c.id,
+      suggestion: c.suggestion || 'Request reasonable, mutual terms standard in Indian contracting.',
+      saferAlternative: c.saferAlternative || '',
+    }));
+  }
+
+  try {
+    const prompt = buildNegotiatePrompt(riskyClauses, role);
+    const rawOutput = await callGeminiWithRetry(prompt);
+    const parsed = extractAndParseJSON(rawOutput);
+    const validated = negotiationSuggestionsSchema.parse(parsed);
+    return validated.suggestions;
+  } catch (err) {
+    console.warn(`[AI Negotiation] Falling back to default suggestions: ${err.message}`);
+    return riskyClauses.map((c) => ({
+      clauseId: c.id,
+      suggestion: c.suggestion || 'Clarify scope, mutual caps on liability, and fair payment schedule in writing.',
+      saferAlternative: c.saferAlternative || '',
+    }));
+  }
+}

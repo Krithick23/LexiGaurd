@@ -1,0 +1,27 @@
+INDEPENDENT CONTRACTOR & SERVICES AGREEMENT (REVISED DRAFT)
+
+This Independent Contractor Agreement ("Agreement") is entered into on this 15th day of March, 2026, by and between Apex Global Solutions Pvt. Ltd., having its registered office in Bangalore, Karnataka ("Company"), and Rahul Sharma, residing in Pune, Maharashtra ("Contractor").
+
+1. SCOPE OF SERVICES & DELIVERABLES
+Contractor agrees to perform software development services as mutually detailed in Statement of Work (SOW) documents signed by both parties. Any material alteration or scope change shall be agreed upon in writing through a formal Change Order specifying reasonable schedule adjustments and additional compensation at Contractor's standard rate.
+
+2. PAYMENT TERMS & INVOICING
+Company shall compensate Contractor at the agreed rate of INR 85,000 per month. Contractor shall submit invoices at the end of each calendar month. Undisputed invoice amounts shall be disbursed via electronic bank transfer within 15 (fifteen) business days of invoice receipt. Overdue balances shall accrue interest at 1.5% per month.
+
+3. INTELLECTUAL PROPERTY & OWNERSHIP
+Upon full and final payment of all corresponding fees, Contractor assigns to Company all right, title, and interest in the bespoke deliverables created specifically for Company under this Agreement. Contractor retains all ownership, copyright, and rights in Contractor's pre-existing software, developer libraries, templates, and background tools, granting Company a non-exclusive, perpetual, royalty-free license to use such tools as embedded in the final deliverables.
+
+4. NON-COMPETE & NON-SOLICITATION
+During the active term of this Agreement, Contractor shall not solicit Company's existing active clients introduced directly through this engagement. Contractor retains the complete freedom to offer consulting, development, and engineering services to any other non-conflicting clients and entities in India or globally.
+
+5. TERMINATION & NOTICE PERIOD
+Either party may terminate this Agreement without cause upon providing thirty (30) days prior written notice. Either party may terminate immediately for material breach if the breaching party fails to cure such breach within 14 days of written notice. Upon termination, Company shall pay for all services rendered and approved expenses incurred up to the effective termination date. Neither party shall be liable for liquidated damages or punitive exit penalties.
+
+6. LIMITATION OF LIABILITY & MUTUAL INDEMNIFICATION
+Each party agrees to indemnify and hold harmless the other party against direct damages resulting from gross negligence, willful misconduct, or proven third-party IP infringement. In no event shall either party be liable for consequential, indirect, or punitive damages. Each party's aggregate total liability under this Agreement shall be capped at the total amount paid by Company to Contractor during the preceding six (6) months.
+
+7. CONFIDENTIALITY & PORTFOLIO ATTRIBUTION
+Each party agrees to protect the other party's proprietary confidential information for a period of two (2) years following termination. Contractor shall have the right to display non-sensitive, publicly launched project screenshots and general work descriptions in Contractor's professional portfolio and resume, subject to Company's prior approval, which shall not be unreasonably withheld.
+
+8. AMENDMENTS & GOVERNING LAW
+No amendment, change, or modification of this Agreement shall be valid unless executed in writing and signed by authorized representatives of both parties. This Agreement shall be governed by and construed in accordance with the laws of India, and any dispute arising hereunder shall be subject to the exclusive jurisdiction of the competent courts in Bangalore, Karnataka.

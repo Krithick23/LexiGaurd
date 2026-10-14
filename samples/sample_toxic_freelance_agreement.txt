@@ -1,0 +1,27 @@
+INDEPENDENT CONTRACTOR & SERVICES AGREEMENT
+
+This Independent Contractor Agreement ("Agreement") is entered into on this 1st day of March, 2026, by and between Apex Global Solutions Pvt. Ltd., having its registered office in Bangalore, Karnataka ("Company"), and Rahul Sharma, residing in Pune, Maharashtra ("Contractor").
+
+1. SCOPE OF SERVICES & DELIVERABLES
+Contractor agrees to perform software development services as specified in Project Schedules. Company may at any time, at its sole discretion, expand, alter, or modify the deliverables and required timelines without any adjustment to Contractor's compensation or timeline. All work must meet subjective perfection standards as determined solely by Company.
+
+2. PAYMENT TERMS & HOLDBACK
+Company shall compensate Contractor at the agreed rate of INR 85,000 per month. Payment shall be disbursed within 90 (ninety) business days following receipt and subjective approval of Contractor's invoice. In the event Company is dissatisfied with any aspect of the work, Company reserves the unappealable right to withhold, discount, or forfeit all pending payments. Contractor shall bear all bank fees and transaction charges.
+
+3. INTELLECTUAL PROPERTY & MORAL RIGHTS
+Contractor unconditionally assigns, transfers, and conveys to Company all right, title, and interest worldwide in and to all work product, inventions, code, designs, and ideas created during the term of this Agreement, including any personal side projects, pre-existing proprietary tools, and prior open-source contributions. Such assignment shall take effect immediately upon creation, irrespective of whether Company has paid Contractor for the corresponding services. Contractor irrevocably waives all moral rights and rights of attribution under the Indian Copyright Act, 1957.
+
+4. NON-COMPETE & EXCLUSIVITY
+During the term of this Agreement and for a period of thirty-six (36) months following its termination for any reason, Contractor shall not, directly or indirectly, anywhere in India or internationally, engage in, consult for, provide services to, or invest in any business, entity, or freelance client that operates in the software, technology, or digital services sector. Contractor agrees this restriction is reasonable and necessary.
+
+5. TERMINATION & PENALTIES
+Company may terminate this Agreement immediately at any time, with or without cause, upon written notice, without paying any compensation or severance. Contractor may terminate this Agreement only by providing ninety (90) days prior written notice. If Contractor terminates prior to the 12-month minimum commitment, Contractor shall pay Company liquidated damages of INR 3,00,000 as compensation for training and project disruption.
+
+6. UNLIMITED INDEMNIFICATION & LIABILITY
+Contractor shall defend, indemnify, and hold harmless Company, its directors, clients, and affiliates against any and all losses, claims, damages, legal fees, or third-party disputes arising out of or related to Contractor's work, whether caused by negligence, inadvertence, or circumstance. Contractor's liability under this Agreement shall be uncapped and unlimited. Company's maximum liability to Contractor for any breach shall not exceed INR 1,000.
+
+7. CONFIDENTIALITY & NON-DISPARAGEMENT
+Contractor shall maintain perpetual confidentiality regarding all Company affairs, trade secrets, rates, and client identities. Contractor shall never publish testimonials, list Company in Contractor's portfolio, or make any public mention of Contractor's involvement with Company. Any breach shall incur an automatic penalty of INR 5,00,000.
+
+8. UNILATERAL AMENDMENT & GOVERNING LAW
+Company reserves the right to amend any term of this Agreement at any time by posting revisions to its internal portal without prior notice to Contractor. This Agreement shall be governed by the laws of the State of Delaware, United States, and Contractor submits to the exclusive jurisdiction of the state and federal courts located in Wilmington, Delaware, bearing all legal expenses.
