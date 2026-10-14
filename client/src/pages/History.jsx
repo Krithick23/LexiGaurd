@@ -123,6 +123,7 @@ export const History = () => {
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
           {[
             { id: '', label: 'All Risks' },
+            { id: 'Critical', label: 'Critical' },
             { id: 'High', label: 'High Risk' },
             { id: 'Medium', label: 'Medium' },
             { id: 'Low', label: 'Low Risk' },
@@ -172,14 +173,28 @@ export const History = () => {
                         >
                           {c.fileName}
                         </Link>
-                        {c.label && (
-                          <span className="text-[11px] bg-brand-50 text-brand-700 font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5">
-                            {c.label}
-                          </span>
-                        )}
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                          {c.detectedContractType && (
+                            <span className="text-[10px] bg-indigo-50 text-indigo-700 font-semibold px-2 py-0.5 rounded-full border border-indigo-100">
+                              {c.detectedContractType}
+                            </span>
+                          )}
+                          {c.label && (
+                            <span className="text-[10px] bg-brand-50 text-brand-700 font-semibold px-2 py-0.5 rounded-full inline-block">
+                              {c.label}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <RiskBadge risk={c.overallRisk} size="sm" />
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <RiskBadge risk={c.overallRisk} size="sm" />
+                      {c.overallRiskScore !== undefined && (
+                        <span className="text-[10px] font-bold text-slate-500">
+                          {c.overallRiskScore}/100
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 pt-2 text-center text-xs">

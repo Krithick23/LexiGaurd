@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User, { normalizeRole } from '../models/User.js';
 import { sendTokenResponse } from '../middleware/authMiddleware.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
@@ -24,7 +24,7 @@ export const register = asyncHandler(async (req, res, next) => {
     name,
     email,
     password,
-    role: role || 'freelancer',
+    role: normalizeRole(role),
   });
 
   sendTokenResponse(user, 201, res);

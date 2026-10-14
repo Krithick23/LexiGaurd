@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
 import contractApi from '../api/contractApi.js';
 import {
@@ -12,23 +12,32 @@ import {
   Lock,
   ArrowRight,
   Info,
+  UserCheck,
 } from 'lucide-react';
 import FileUploader from '../components/FileUploader.jsx';
-import RoleSelector from '../components/RoleSelector.jsx';
 import LegalDisclaimer from '../components/LegalDisclaimer.jsx';
+
+const ROLE_DISPLAY_NAMES = {
+  freelancer: 'Freelancer / Contractor',
+  employee: 'Intern / Employee',
+  small_business: 'Small Business Owner',
+  founder: 'Founder / Startup Owner',
+};
 
 export const Upload = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const [file, setFile] = useState(null);
-  const [role, setRole] = useState(user?.role || 'freelancer');
   const [label, setLabel] = useState('');
   const [discardRawText, setDiscardRawText] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [error, setError] = useState(null);
   const [statusText, setStatusText] = useState('');
+
+  const userRole = user?.role || 'freelancer';
+  const roleTitle = ROLE_DISPLAY_NAMES[userRole] || 'Freelancer / Contractor';
 
   const handleUpload = async (e) => {
     e.preventDefault();
@@ -44,7 +53,6 @@ export const Upload = () => {
 
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('role', role);
     if (label.trim()) formData.append('label', label.trim());
     formData.append('discardRawText', discardRawText);
 
@@ -52,7 +60,7 @@ export const Upload = () => {
       const data = await contractApi.uploadAndAnalyze(formData, (percent) => {
         setUploadProgress(Math.min(percent, 80));
         if (percent >= 80) {
-          setStatusText('Extracting text and segmenting clauses...');
+          setStatusText('Classifying document and segmenting clauses...');
         }
       });
 
@@ -72,10 +80,10 @@ export const Upload = () => {
     setIsUploading(true);
     setError(null);
     setUploadProgress(40);
-    setStatusText(`Loading sample ${sampleType === 'toxic' ? 'predatory' : 'negotiated'} agreement...`);
+    setStatusText(`Loading sample ${sampleType === 'toxic' ? 'predatory' : 'negotiated'} agreement for ${roleTitle}...`);
 
     try {
-      const data = await contractApi.loadSampleContract(sampleType, role);
+      const data = await contractApi.loadSampleContract(sampleType);
       setUploadProgress(100);
       if (data.success && data.contract?._id) {
         navigate(`/analysis/${data.contract._id}`);
@@ -94,7 +102,7 @@ export const Upload = () => {
           Upload & Analyze Contract
         </h1>
         <p className="text-sm text-slate-500 max-w-lg mx-auto">
-          Upload your agreement in PDF, DOCX, or TXT format. Our pipeline segments clauses and benchmarks risks for your role.
+          Upload your agreement in PDF, DOCX, or TXT format. Our 3-stage AI pipeline automatically classifies the document and evaluates risks for your authenticated role.
         </p>
       </div>
 
@@ -110,7 +118,7 @@ export const Upload = () => {
         {/* Step 1: File Uploader */}
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            1. Document File (PDF, DOCX, TXT)
+            Contract Document (PDF, DOCX, TXT)
           </label>
           <FileUploader
             file={file}
@@ -121,19 +129,37 @@ export const Upload = () => {
           />
         </div>
 
-        {/* Step 2: Role Selector */}
-        <div>
-          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-            2. Review Perspective
-          </label>
-          <RoleSelector
-            value={role}
-            onChange={(r) => setRole(r)}
-            label=""
-          />
+        {/* Automatic Registered Role Indicator (Informational Only - No Role Question / Dropdown) */}
+        <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-brand-100 text-brand-700 flex items-center justify-center shrink-0 shadow-subtle">
+              <ShieldCheck size={20} />
+            </div>
+            <div>
+              <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                Review Perspective
+              </div>
+              <div className="text-sm font-semibold text-slate-900">
+                Analyzing as:{' '}
+                <span className="text-brand-600 font-bold">{roleTitle}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-xs text-slate-500">
+            <span>(from account)</span>
+            <span>•</span>
+            <Link
+              to="/settings"
+              className="text-brand-600 hover:text-brand-700 font-semibold hover:underline inline-flex items-center gap-0.5"
+            >
+              <span>Change role</span>
+              <ArrowRight size={12} />
+            </Link>
+          </div>
         </div>
 
-        {/* Step 3: Optional Label & Privacy settings */}
+        {/* Optional Label & Privacy settings */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
@@ -143,7 +169,7 @@ export const Upload = () => {
               type="text"
               value={label}
               onChange={(e) => setLabel(e.target.value)}
-              placeholder="e.g. Apex Global MSA v1"
+              placeholder="e.g. Acme Services Master Agreement"
               disabled={isUploading}
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500/20 focus:border-brand-600 transition-colors"
             />
@@ -169,7 +195,7 @@ export const Upload = () => {
         <div className="p-3.5 bg-brand-50/60 rounded-xl border border-brand-100 flex items-start gap-2.5 text-xs text-brand-900">
           <Lock size={15} className="shrink-0 text-brand-600 mt-0.5" />
           <p className="leading-relaxed">
-            <strong>Privacy Guarantee:</strong> Documents are extracted in temporary RAM. No binary files are stored on server disks or MongoDB. Only extracted clause text and structured risk ratings are retained.
+            <strong>Privacy Guarantee:</strong> Documents are extracted in temporary RAM. No raw binary files are stored on server disk. Only extracted clauses and structured risk assessments are saved to your account.
           </p>
         </div>
 
@@ -206,7 +232,7 @@ export const Upload = () => {
           ) : (
             <>
               <UploadCloud size={18} />
-              <span>Start Risk Analysis</span>
+              <span>Analyze Contract</span>
             </>
           )}
         </button>
@@ -216,10 +242,10 @@ export const Upload = () => {
       <div className="bg-slate-100/80 rounded-2xl p-6 border border-slate-200 space-y-3">
         <div className="flex items-center gap-2 text-slate-800 font-bold text-sm">
           <Sparkles size={16} className="text-brand-600" />
-          <span>Don't have a document file right now? Try a pre-built sample:</span>
+          <span>Don't have a document file right now? Try a pre-built sample for {roleTitle}:</span>
         </div>
         <p className="text-xs text-slate-500 leading-relaxed">
-          Test LexiGuard immediately with realistic contracts containing real predatory or negotiated terms:
+          Instantly test LexiGuard with realistic contracts calibrated for your registered account:
         </p>
         <div className="flex flex-col sm:flex-row gap-3 pt-1">
           <button
@@ -228,7 +254,7 @@ export const Upload = () => {
             disabled={isUploading}
             className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-white hover:bg-red-50 text-red-700 border border-red-200 shadow-subtle transition-colors flex items-center justify-center gap-2"
           >
-            <span>Sample 1: Predatory Toxic Freelance Contract</span>
+            <span>Sample 1: Predatory Clauses Demo</span>
             <ArrowRight size={14} />
           </button>
           <button
@@ -237,7 +263,7 @@ export const Upload = () => {
             disabled={isUploading}
             className="flex-1 py-2.5 px-4 rounded-xl text-xs font-semibold bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-subtle transition-colors flex items-center justify-center gap-2"
           >
-            <span>Sample 2: Revised Fair Freelance Contract</span>
+            <span>Sample 2: Revised Fair Contract Demo</span>
             <ArrowRight size={14} />
           </button>
         </div>

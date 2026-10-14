@@ -60,7 +60,7 @@ export const Dashboard = () => {
   const handleLoadDemo = async (type = 'toxic') => {
     setLoadingDemo(true);
     try {
-      await contractApi.loadSampleContract(type, user?.role || 'freelancer');
+      await contractApi.loadSampleContract(type);
       await fetchStats();
     } catch (err) {
       alert(`Demo load failed: ${err.message}`);

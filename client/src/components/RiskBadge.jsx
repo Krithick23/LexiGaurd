@@ -1,8 +1,14 @@
 import React from 'react';
-import { ShieldAlert, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { AlertOctagon, ShieldAlert, AlertTriangle, ShieldCheck, Info } from 'lucide-react';
 
 export const RiskBadge = ({ risk = 'Low', size = 'md', showIcon = true }) => {
   const styles = {
+    Critical: {
+      bg: 'bg-red-100 text-red-900 border-red-300 ring-1 ring-red-500/20',
+      dot: 'bg-red-600',
+      icon: AlertOctagon,
+      label: 'Critical Risk',
+    },
     High: {
       bg: 'bg-red-50 text-red-700 border-red-200',
       dot: 'bg-red-500',
@@ -21,9 +27,20 @@ export const RiskBadge = ({ risk = 'Low', size = 'md', showIcon = true }) => {
       icon: ShieldCheck,
       label: 'Low Risk',
     },
+    Informational: {
+      bg: 'bg-blue-50 text-blue-700 border-blue-200',
+      dot: 'bg-blue-500',
+      icon: Info,
+      label: 'Informational',
+    },
   };
 
-  const current = styles[risk] || styles.Low;
+  const normalizedRisk =
+    risk === 'Critical' || risk === 'High' || risk === 'Medium' || risk === 'Low' || risk === 'Informational'
+      ? risk
+      : 'Low';
+
+  const current = styles[normalizedRisk] || styles.Low;
   const IconComponent = current.icon;
 
   const sizeClasses = {
@@ -40,7 +57,9 @@ export const RiskBadge = ({ risk = 'Low', size = 'md', showIcon = true }) => {
 
   return (
     <span
-      className={`inline-flex items-center gap-1.5 font-medium rounded-full border shadow-sm ${current.bg} ${sizeClasses[size] || sizeClasses.md}`}
+      className={`inline-flex items-center gap-1.5 font-medium rounded-full border shadow-sm ${current.bg} ${
+        sizeClasses[size] || sizeClasses.md
+      }`}
     >
       {showIcon && <IconComponent size={iconSizes[size] || 14} className="shrink-0" />}
       <span>{current.label}</span>

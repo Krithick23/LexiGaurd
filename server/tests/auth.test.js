@@ -7,6 +7,7 @@ import User from '../models/User.js';
 describe('Authentication API Integration Tests', () => {
   beforeAll(async () => {
     process.env.NODE_ENV = 'test';
+    delete process.env.MONGODB_URI;
     await connectDB();
     await User.deleteMany({});
   });

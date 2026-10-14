@@ -6,6 +6,10 @@ const clauseSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    title: {
+      type: String,
+      default: '',
+    },
     text: {
       type: String,
       required: true,
@@ -17,12 +21,37 @@ const clauseSchema = new mongoose.Schema(
     },
     risk: {
       type: String,
-      enum: ['Low', 'Medium', 'High'],
+      enum: ['Critical', 'High', 'Medium', 'Low', 'Informational'],
       default: 'Low',
+    },
+    riskScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 20,
     },
     reason: {
       type: String,
       default: '',
+    },
+    whyItMatters: {
+      type: String,
+      default: '',
+    },
+    impact: {
+      financial: { type: String, default: '' },
+      legal: { type: String, default: '' },
+      operational: { type: String, default: '' },
+    },
+    suggestedAction: {
+      type: String,
+      default: '',
+    },
+    flags: {
+      isMissing: { type: Boolean, default: false },
+      isAmbiguous: { type: Boolean, default: false },
+      isUnusual: { type: Boolean, default: false },
+      isOneSided: { type: Boolean, default: false },
     },
     suggestion: {
       type: String,
@@ -31,6 +60,14 @@ const clauseSchema = new mongoose.Schema(
     saferAlternative: {
       type: String,
       default: '',
+    },
+    negotiation: {
+      clarify: { type: String, default: '' },
+      negotiate: { type: String, default: '' },
+      why: { type: String, default: '' },
+      alternativeWording: { type: String, default: '' },
+      priority: { type: String, enum: ['Critical', 'High', 'Medium', 'Low'], default: 'Medium' },
+      recommendLegalReview: { type: Boolean, default: false },
     },
     riskFactors: {
       type: [String],
@@ -45,6 +82,10 @@ const clauseSchema = new mongoose.Schema(
       min: 0,
       max: 1,
       default: 0.9,
+    },
+    supportingText: {
+      type: String,
+      default: '',
     },
     matchedClauseId: {
       type: String,
@@ -91,8 +132,46 @@ const contractSchema = new mongoose.Schema(
     },
     overallRisk: {
       type: String,
-      enum: ['Low', 'Medium', 'High'],
+      enum: ['Critical', 'High', 'Medium', 'Low', 'Informational'],
       default: 'Low',
+    },
+    overallRiskScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 20,
+    },
+    detectedContractType: {
+      type: String,
+      default: 'General Agreement',
+    },
+    contractClassification: {
+      documentType: { type: String, default: 'General Agreement' },
+      parties: { type: [String], default: [] },
+      purpose: { type: String, default: '' },
+      confidence: { type: Number, default: 0.9 },
+      missingOrUnclearInfo: { type: [String], default: [] },
+      classificationDetails: { type: String, default: '' },
+    },
+    riskDistribution: {
+      critical: { type: Number, default: 0 },
+      high: { type: Number, default: 0 },
+      medium: { type: Number, default: 0 },
+      low: { type: Number, default: 0 },
+      informational: { type: Number, default: 0 },
+    },
+    missingClauses: [
+      {
+        title: { type: String, default: '' },
+        description: { type: String, default: '' },
+        whyItMatters: { type: String, default: '' },
+        suggestedAddition: { type: String, default: '' },
+        riskLevel: { type: String, default: 'Medium' },
+      },
+    ],
+    analysisLimitations: {
+      type: String,
+      default: '',
     },
     clauses: {
       type: [clauseSchema],
@@ -110,7 +189,7 @@ const contractSchema = new mongoose.Schema(
     },
     roleAtAnalysis: {
       type: String,
-      enum: ['freelancer', 'employee', 'founder'],
+      enum: ['freelancer', 'employee', 'small_business', 'founder'],
       default: 'freelancer',
     },
     modelUsed: {
@@ -119,7 +198,7 @@ const contractSchema = new mongoose.Schema(
     },
     analysisVersion: {
       type: String,
-      default: '1.0.0',
+      default: '2.0.0',
     },
     discardRawText: {
       type: Boolean,

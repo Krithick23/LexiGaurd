@@ -44,10 +44,9 @@ export const contractApi = {
     return res.data;
   },
 
-  loadSampleContract: async (sampleType = 'toxic', role = 'freelancer') => {
+  loadSampleContract: async (sampleType = 'toxic') => {
     const res = await api.post('/contracts/sample-demo', {
       sampleType,
-      role,
     });
     return res.data;
   },

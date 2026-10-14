@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { normalizeRole } from '../models/User.js';
 
 export const validate = (schema) => (req, res, next) => {
   try {
@@ -38,7 +39,11 @@ export const registerSchema = z.object({
       .min(8, 'Password must be at least 8 characters long')
       .regex(/[A-Za-z]/, 'Password must contain at least one letter')
       .regex(/[0-9]/, 'Password must contain at least one number'),
-    role: z.enum(['freelancer', 'employee', 'founder']).default('freelancer'),
+    role: z
+      .string()
+      .optional()
+      .transform((val) => normalizeRole(val))
+      .default('freelancer'),
   }),
 });
 
@@ -52,7 +57,10 @@ export const loginSchema = z.object({
 export const updateProfileSchema = z.object({
   body: z.object({
     name: z.string().min(2, 'Name must be at least 2 characters').max(100).optional(),
-    role: z.enum(['freelancer', 'employee', 'founder']).optional(),
+    role: z
+      .string()
+      .optional()
+      .transform((val) => normalizeRole(val)),
   }),
 });
 

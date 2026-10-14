@@ -1,4 +1,4 @@
-import User from '../models/User.js';
+import User, { normalizeRole } from '../models/User.js';
 import Contract from '../models/Contract.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
@@ -25,8 +25,8 @@ export const updateProfile = asyncHandler(async (req, res, next) => {
   const updates = {};
 
   if (name) updates.name = name.trim();
-  if (role && ['freelancer', 'employee', 'founder'].includes(role)) {
-    updates.role = role;
+  if (role) {
+    updates.role = normalizeRole(role);
   }
 
   const updatedUser = await User.findByIdAndUpdate(req.user._id, updates, {
